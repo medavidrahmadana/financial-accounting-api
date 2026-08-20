@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Install system dependencies & PHP extensions (GD, Zip, PDO MySQL)
 RUN apt-get update && apt-get install -y \
@@ -9,8 +9,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev \
-    nginx
+    libzip-dev
 
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
@@ -26,10 +25,8 @@ COPY . /var/www
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 
-# Configure Nginx
-COPY nginx.conf /etc/nginx/sites-available/default
-
-# Expose port
+# Expose port 8080
 EXPOSE 8080
 
-CMD php artisan migrate --force && php artisan config:cache && php artisan route:cache && nginx -g 'daemon off;'
+# Run migrations & start PHP built-in web server in foreground mode
+CMD php artisan migrate --force && php artisan config:clear && php -S 0.0.0.0:8080 -t public
