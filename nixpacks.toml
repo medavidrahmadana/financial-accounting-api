@@ -3,19 +3,10 @@ providers = ["php"]
 
 [variables]
 NIXPACKS_PHP_VERSION = "8.2"
-
-[phases.setup]
-nixPkgs = [
-  "...",
-  "php82Extensions.pdo_mysql",
-  "php82Extensions.gd",
-  "php82Extensions.zip",
-  "php82Extensions.bcmath",
-  "php82Extensions.mbstring"
-]
+NIXPACKS_PHP_EXTENSIONS = "pdo_mysql, gd, zip, mbstring, bcmath"
 
 [phases.build]
 cmds = [
-  "composer install --no-dev --optimize-autoloader",
+  "composer install --ignore-platform-req=ext-gd --no-dev --optimize-autoloader",
   "php artisan config:clear"
 ]
