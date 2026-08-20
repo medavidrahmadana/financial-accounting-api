@@ -3,10 +3,16 @@ providers = ["php"]
 
 [variables]
 NIXPACKS_PHP_VERSION = "8.2"
-NIXPACKS_PHP_EXTENSIONS = "pdo_mysql, mbstring, bcmath, ctype, fileinfo, json, openssl, tokenizer, xml"
 
 [phases.setup]
-nixPkgs = ["...", "php82Extensions.pdo_mysql"]
+nixPkgs = [
+  "...",
+  "php82Extensions.pdo_mysql",
+  "php82Extensions.gd",
+  "php82Extensions.zip",
+  "php82Extensions.bcmath",
+  "php82Extensions.mbstring"
+]
 
 [phases.build]
 cmds = [
