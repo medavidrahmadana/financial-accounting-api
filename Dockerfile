@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install system dependencies & PHP extensions (GD, Zip, PDO MySQL)
+# Install system dependencies & PHP extensions (GD, Zip, SQLite, PDO MySQL)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -9,9 +9,11 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    libzip-dev
+    libzip-dev \
+    sqlite3 \
+    libsqlite3-dev
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -22,11 +24,14 @@ WORKDIR /var/www
 # Copy application files
 COPY . /var/www
 
+# Create SQLite database file if not exists
+RUN touch /var/www/database/database.sqlite && chmod 777 /var/www/database/database.sqlite
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 
 # Expose port
 EXPOSE 8080
 
-# Run migrations & start persistent PHP web server
-CMD ["sh", "-c", "php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public"]
+# Run seeders & start persistent PHP web server
+CMD ["sh", "-c", "php artisan migrate:fresh --seed --force && php -S 0.0.0.0:${PORT:-8080} -t public"]
