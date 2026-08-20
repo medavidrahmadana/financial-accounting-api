@@ -28,5 +28,5 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
 # Expose port
 EXPOSE 8080
 
-# Start PHP built-in web server listening on PORT environment variable from Railway
-CMD ["sh", "-c", "php artisan migrate --force && php artisan config:clear && php -S 0.0.0.0:${PORT:-8080} -t public"]
+# Run migrations & start persistent PHP web server
+CMD ["sh", "-c", "php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public"]
