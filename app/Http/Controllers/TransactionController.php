@@ -9,7 +9,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::with('coa.category')->orderBy('date', 'desc');
+        $query = Transaction::with('coa.category')->orderBy('date', 'desc')->orderBy('id', 'desc');
 
         if ($request->has('year')) {
             $query->whereYear('date', $request->year);
